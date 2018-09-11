@@ -1,10 +1,7 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
-import cgi
 
-form = cgi.FieldStorage()
-inUser =  form.getvalue('username')
 
 browser = webdriver.Chrome(executable_path='/home/skvutte/Downloads/chromedriver/chromedriver')
 browser.set_window_size(1366,768)

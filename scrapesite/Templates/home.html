@@ -1,0 +1,9 @@
+<html>
+
+<form name= "form_name" action="/user/" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    Username: <input name= "username" type="text" >
+<input type="submit" value="Login">
+</form>
+</html>
