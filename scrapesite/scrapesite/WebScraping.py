@@ -17,14 +17,12 @@ def scrapefunction(userin, passin):
     username.send_keys(userin)
     password.send_keys(passin)
 
-    time.sleep(15)
-
     select = browser.find_element_by_name("submit")
     if select:
         select.click()
 
-    time.sleep(15)
-    html = browser.page_source
-    soup = BeautifulSoup(html, "lxml")
-    return soup.find_all('a')
+    #time.sleep(15)
+    #html = browser.page_source
+    #soup = BeautifulSoup(html, "lxml")
+    #return soup.find_all('a')
 

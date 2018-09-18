@@ -19,15 +19,7 @@ def user(request):
             passin = form.cleaned_data["password"]
 
             scrapefunction(userin, passin)
-
-
-            #p = run(["WebScraping.py", userin, password], stdout=PIPE, input=None, encoding='utf-8')
-            #p = run(["/home/skvutte/PycharmProjects/WebScrape/scrapesite/WebScraping.py"], stdout=PIPE, input=None, encoding='utf-8')
-
-            #if p.returncode != 0: raise Exception
-
-            #print(p.stdout)
-            #return p.stdout
+            return render(request, "main.html")
 
         else:
             return render(request, "home.html")
