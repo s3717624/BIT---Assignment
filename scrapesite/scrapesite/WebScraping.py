@@ -19,9 +19,9 @@ def scrapefunction(userin, passin):
 
     time.sleep(15)
 
-    submit = browser.find_element_by_name("submit".click())
-
-
+    select = browser.find_element_by_name("submit")
+    if select:
+        select.click()
 
     time.sleep(15)
     html = browser.page_source
