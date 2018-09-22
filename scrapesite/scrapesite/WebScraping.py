@@ -26,5 +26,6 @@ def scrapefunction(userin, passin):
     time.sleep(5)
     html = driver.page_source
     soup = BeautifulSoup(html, "lxml")
-    return soup.find_all('a')
+    scrape = soup.find_all('a')
+    return scrape
 
