@@ -9,7 +9,9 @@ from textwrap import shorten
 from django.http import HttpResponse
 
 def scrapefunction(userin, passin):
-    browser = webdriver.Chrome(executable_path='C:\\Users\\Will\\AppData\\Local\\Programs\\Python\\Python37-32\\chromedriver\\chromedriver.exe')
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    browser = webdriver.Chrome(executable_path='driver location', chrome_options=options)
     browser.set_window_size(1366,768)
     browser.set_window_position(0,0)
     url = "https://sso-cas.rmit.edu.au/rmitcas/login?service=https://mytimetable.rmit.edu.au/even/student"
