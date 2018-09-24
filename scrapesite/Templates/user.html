@@ -1,11 +1,690 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>RMIT Timetabler</title>
+
+    <style>
+
+        html {
+            font-family: Arial, sans-serif;
+        }
+
+        h3 {
+            display: inline;
+            font-weight: normal;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        #page {
+            display: inline-block;
+            float: left;
+            height: 90vh;
+            width: 1150px;
+            overflow-y: scroll;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+        }
+
+        #dayheaders {
+            margin-bottom: 6px;
+            margin-left: 89px;
+            margin-top: 20px;
+        }
+
+        .dayheader {
+            width: 200px;
+            border: 1px solid rgba(0, 0, 0, 0);
+        }
+
+        #timeheaders {
+            float: left;
+            z-index: 1;
+        }
+
+        .timeheader {
+            width: 80px;
+            height: 67px;
+            padding-right: 6px;
+            line-height: 0px;
+            font-size: 15px;
+            text-align: right;
+            vertical-align: top;
+            border: 1px solid rgba(0, 0, 0, 0);
+            z-index: 1;
+        }
+
+        #timetable {
+
+        }
+
+        #timetable td {
+            width: 200px;
+            height: 32px;
+            border: 1px solid grey;
+            font-size: 8px;
+        }
+
+        #cells {
+            position: relative;
+            bottom: 36px;
+            right: 8px;
+        }
+
+        .cell {
+            position: absolute;
+            width: 89px;
+            padding: 5px 5px 5px 5px;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+            box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.1);
+            opacity: 0.9;
+        }
+            .cell:hover {
+                opacity: 1;
+                z-index: 1;
+            }
+
+        .cellraised {
+            position: absolute;
+            width: 89px;
+            padding: 5px 5px 5px 5px;
+            border-radius: 18px;
+            border: 1px solid rgba(228, 42, 32, 1);
+            box-shadow: 0px 0px 0px 4px rgba(228, 42, 32, 1);
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .cellfinish {
+            position: absolute;
+            width: 89px;
+            padding: 5px 5px 5px 5px;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .celltext {
+            cursor: default;
+            margin-top: 4px;
+            margin-left: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #side {
+            float: left;
+            margin-left: 48px;
+        }
+
+        h1 {
+            font-weight: normal;
+            font-size: 36px;
+            margin-top: 0;
+        }
+
+        #buttons {
+            width: 180px;
+        }
+
+        .button {
+            width: 180px;
+            height: 36px;
+            border-radius: 6px;
+            padding: 10px 10px 10px 10px;
+            background-color: #e42a20;
+            border: none;
+            font-size: 18;
+            color: white;
+        }
+            .button:hover {
+                background-color: #c82119;
+            }
+
+        #colorcodes {
+            font-size: 20px;
+        }
+
+        .colorcode {
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .colortext {
+            vertical-align: super;
+        }
+
+        .color {
+            display: inline-block;
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            vertical-align: sub;
+        }
+
+        #screennormal {
+            width: 100%;
+            height: 100%;
+        }
+        #screenpopup {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0.3;
+        }
+
+        #popup {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin-top: -53px;
+            margin-left: -193px;
+            width: 360px;
+            height 80px;
+            z-index: 100;
+            padding: 12px 12px 12px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+            background: linear-gradient(0deg, rgba(228, 42, 32, 0.8) 0%, rgba(228, 42, 32, 1) 100%);
+            box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+        }
+            #popupnone {
+                display: none;
+            }
+
+        .popupbutton {
+            width: 70px;
+            height: 36px;
+            border-radius: 6px;
+            padding: 10px 10px 10px 10px;
+            background-color: rgba(251, 225, 223, 1);
+            border: none;
+            font-size: 18;
+            font-weight: bold;
+            color: #e42a20;
+        }
+            .popupbutton:hover {
+                background-color: white;
+            }
+
+
+    </style>
+
 </head>
+
 <body>
-<h1>the username is {{ userin }} </h1>
+
+<div id="popupnone">
+    <h3>Warning</h3><br><br>
+    Classes seem to be missing from your timetable.<br><br>
+    <button onclick="closePopup()" type="button" class="popupbutton">OK</button>
+</div>
+
+<div id="screennormal">
+
+<table id="dayheaders">
+    <th class="dayheader">
+        Monday
+    </th>
+    <th class="dayheader">
+        Tuesday
+    </th>
+    <th class="dayheader">
+        Wednesday
+    </th>
+    <th class="dayheader">
+        Thursday
+    </th>
+    <th class="dayheader">
+        Friday
+    </th>
+</table>
+
+<div id="page">
+
+<table id="timeheaders">
+    <tr>
+        <td class="timeheader"></td>
+    </tr>
+    <tr>
+        <td class="timeheader">7:00 AM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">8:00 AM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">9:00 AM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">10:00 AM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">11:00 AM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">12:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">1:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">2:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">3:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">4:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">5:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">6:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">7:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">8:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">9:00 PM</td>
+    </tr>
+    <tr>
+        <td class="timeheader">10:00 PM</td>
+    </tr>
+</table>
+
+<table id="timetable">
+
+
+<div id="cells">
+
+{% autoescape off %}
+{% for d in divs %}
+    {{ d }}
+{% endfor %}
+{% endautoescape %}
+
+</div>
+
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+
+</table>
+
+</div>
+
+
+<div id="side">
+
+<div id="banner">
+    <h1>RMIT Timetabler</h1><br>
+</div>
+
+<div id="colorcodes">
+Classes required in timetable:
+<br>
+
+{% autoescape off %}
+{% for cc in colorcode %}
+    {{ cc }}
+{% endfor %}
+{% endautoescape %}
+
+{% autoescape off %}
+{% for c in code %}
+    {{ c }}
+{% endfor %}
+{% endautoescape %}
+
+</div>
+
+<br><br><br>
+
+<div id="buttons">
+<button onclick="hide()" type="button" class="button">Hide unselected classes</button>
+<br><br>
+<button onclick="show()" type="button" class="button">Show unselected classes</button>
+<br><br>
+<button onclick="finish()" type="button" class="button">Finish timetable</button>
+<br><br>
+</div>
+</div>
+
+</div>
+
+<script>
+
+function raise(div) {
+    if (div.className.match(/(?:^|\s)cell(?!\S)/)) {
+        div.className = "cellraised";
+    }
+    else {
+        div.className = "cell";
+    }
+}
+
+function hide() {
+    var cells = document.getElementsByClassName('cell'), i;
+    for (i = 0; i < cells.length; i += 1) {
+        cells[i].style.display = 'none';
+    }
+}
+
+function show() {
+    var cells = document.getElementsByClassName('cell'), i;
+    for (i = 0; i < cells.length; i += 1) {
+        cells[i].style.display = '';
+    }
+}
+
+function finish() {
+    hide();
+    var cells = document.getElementsByClassName("cellraised"), i;
+    for (var i = cells.length-1; i >= 0; i--) {
+        var x = cells[i].getBoundingClientRect();
+        if (x.left >= 97 && x.left < 300) {
+            cells[i].style.left = "97px";
+        }
+        else if (x.left >= 300 && x.left < 503) {
+            cells[i].style.left = "300px";
+        }
+        else if (x.left >= 503 && x.left < 706) {
+            cells[i].style.left = "503px";
+        }
+        else if (x.left >= 706 && x.left < 909) {
+            cells[i].style.left = "706px";
+        }
+        else {
+            cells[i].style.left = "909px";
+        }
+    }
+
+    var cells = document.getElementsByClassName("cellraised"), i;
+    for(var i = cells.length-1; i >= 0; i--) {
+        cells[i].className = 'cellfinish';
+    }
+
+    var code = document.getElementsByClassName("code"), i;
+    var k = 0;
+    for(var i = code.length-1; i >= 0; i--) {
+        var cells = document.getElementsByClassName("cellfinish"), j;
+        for(var j = cells.length-1; j >= 0; j--) {
+            if ((cells[j].style.background).includes(code[i].innerHTML)) {
+                k++;
+                j = 0;
+            }
+        }
+    }
+    if (k < code.length) {
+        var screen = document.getElementById("screennormal");
+        var popup = document.getElementById("popupnone");
+        screen.id = "screenpopup";
+        popup.id = "popup";
+    }
+}
+
+function closePopup() {
+    var screen = document.getElementById("screenpopup");
+    var popup = document.getElementById("popup");
+    screen.id = "screennormal";
+    popup.id = "popupnone";
+}
+
+
+</script>
+
+
 </body>
+
 </html>

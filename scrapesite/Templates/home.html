@@ -1,11 +1,26 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'style/style.css' %}">
+    <meta charset="UTF-8">
+    <title>RMIT Timetabler</title>
+</head>
 
-<form name= "form_name" action="/user/" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    Username: <input name= "username" type="text" >
-    <br>
-    Password: <input name= "password" type="password" >
-<input type="submit" value="Login">
-</form>
+<body>
+
+<div id="loginform">
+        <h1>RMIT Timetabler</h1>
+    <form name="form_name" action="/user/" method="post">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <input name="username" type="text" placeholder="Username">
+        <br><br>
+        <input name="password" type="password" placeholder="Password">
+        <br><br>
+        <input id="login" type="submit" value="Login">
+    </form>
+</div>
+
+</body>
+
 </html>
