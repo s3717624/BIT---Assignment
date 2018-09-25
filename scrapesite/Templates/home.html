@@ -3,15 +3,21 @@
 <head>
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
     <meta charset="UTF-8">
     <title>RMIT Timetabler</title>
 </head>
 
 <body>
+<div class="wrapper">
+    <div class="dimmer">
+        </div>
+
+<img id="gif" src="{% static 'img/spinning.gif' %}">
 
 <div id="loginform">
         <h1>RMIT Timetabler</h1>
-    <form name="form_name" action="/user/" method="post">
+    <form id="login_form" name="form_name" action="/user/" method="post">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         <input name="username" type="text" placeholder="Username">
         <br><br>
@@ -21,6 +27,17 @@
     </form>
 </div>
 
+
+</div>
+
 </body>
+
+<script type="text/javascript">
+    $('#login_form').submit(function() {
+        var dimmer = $('.dimmer');
+        $('#gif').css('visibility', 'visible');
+        dimmer.show();
+    });
+</script>
 
 </html>
